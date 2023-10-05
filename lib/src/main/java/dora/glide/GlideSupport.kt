@@ -43,7 +43,7 @@ fun ImageView.setUrlNoPlaceholder(url: String) {
     }
     Glide.with(context).load(url)
         .placeholder(ColorDrawable(Color.TRANSPARENT))
-        .error(R.drawable.dora_default_circle_placeholder) // 错误时显示的图片
+//        .error(R.drawable.dora_default_circle_placeholder) // 错误时显示的图片
         .skipMemoryCache(false) //启用内存缓存
         .diskCacheStrategy(DiskCacheStrategy.RESOURCE) //磁盘缓存策略
         .into(this)
