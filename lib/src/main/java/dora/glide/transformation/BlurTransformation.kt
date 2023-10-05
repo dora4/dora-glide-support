@@ -34,11 +34,13 @@ class BlurTransformation @JvmOverloads constructor(
         val paint = Paint()
         paint.flags = Paint.FILTER_BITMAP_FLAG
         canvas.drawBitmap(toTransform, 0f, 0f, paint)
-        bitmap = try {
-            RSBlur.blur(context, bitmap, radius)
-        } catch (e: RSRuntimeException) ({
-            FastBlur.blur(bitmap, radius, true)
-        })!!
+        try {
+            bitmap = RSBlur.blur(context, bitmap, radius)
+        } catch (e: RSRuntimeException) {
+            if (FastBlur.blur(bitmap, radius, true) != null) {
+                bitmap = FastBlur.blur(bitmap, radius, true)!!
+            }
+        }
         return bitmap
     }
 

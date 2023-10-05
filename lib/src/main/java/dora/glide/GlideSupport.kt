@@ -16,7 +16,7 @@ import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import dora.glide.transformation.BlurTransformation
 import dora.glide.transformation.CircleBorderTransform
-import dora.lifecycle.firebase.R
+import dora.lifecycle.glide.R
 import dora.util.ScreenUtils
 import dora.util.TaskStackManager
 import java.io.File

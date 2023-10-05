@@ -21,5 +21,5 @@ dependencyResolutionManagement {
         maven { url "https://jitpack.io" }
     }
 }
-rootProject.name = "dora-firebase-support"
+rootProject.name = "dora-glide-support"
 include ':lib'
