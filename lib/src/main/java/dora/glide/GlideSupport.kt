@@ -1,6 +1,8 @@
 package dora.glide
 
 import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
@@ -34,10 +36,23 @@ fun ImageView.setUrl(url: String) {
             .into(this)
 }
 
+fun ImageView.setUrlNoPlaceholder(url: String) {
+    if (TaskStackManager.getInstance().topActivity != null
+        && TaskStackManager.getInstance().topActivity.isFinishing) {
+        return
+    }
+    Glide.with(context).load(url)
+        .placeholder(ColorDrawable(Color.TRANSPARENT))
+        .error(R.drawable.dora_default_circle_placeholder) // 错误时显示的图片
+        .skipMemoryCache(false) //启用内存缓存
+        .diskCacheStrategy(DiskCacheStrategy.RESOURCE) //磁盘缓存策略
+        .into(this)
+}
+
 /**
  * 设置图片，不开启缓存。
  */
-fun ImageView.setUrlNoCache(url: String?) {
+fun ImageView.setUrlNoCache(url: String) {
     if (TaskStackManager.getInstance().topActivity != null
         && TaskStackManager.getInstance().topActivity.isFinishing) {
         return
@@ -54,7 +69,7 @@ fun ImageView.setUrlNoCache(url: String?) {
 /**
  * 加载圆形图片。
  */
-fun ImageView.setUrlCircle(url: String?) {
+fun ImageView.setUrlCircle(url: String) {
     if (TaskStackManager.getInstance().topActivity != null
         && TaskStackManager.getInstance().topActivity.isFinishing) {
         return
@@ -76,7 +91,7 @@ fun ImageView.setUrlCircle(url: String?) {
  * @param borderWidth 边框宽度
  * @param borderColor 边框颜色
  */
-fun ImageView.setUrlCircleBorder(url: String?, borderWidth: Float, borderColor: Int) {
+fun ImageView.setUrlCircleBorder(url: String, borderWidth: Float, borderColor: Int) {
     if (TaskStackManager.getInstance().topActivity != null
         && TaskStackManager.getInstance().topActivity.isFinishing) {
         return
@@ -97,7 +112,7 @@ fun ImageView.setUrlCircleBorder(url: String?, borderWidth: Float, borderColor: 
  * bitmap会先圆角裁剪，再加载到ImageView中，如果bitmap图片尺寸大于ImageView尺寸，则会看不到
  * 使用CenterCrop()重载，会先将bitmap居中裁剪，再进行圆角处理，这样就能看到了。
  */
-fun ImageView.setUrlRound(url: String?, radius: Int = 10) {
+fun ImageView.setUrlRound(url: String, radius: Int = 10) {
     if (TaskStackManager.getInstance().topActivity != null
         && TaskStackManager.getInstance().topActivity.isFinishing) {
         return
@@ -111,7 +126,7 @@ fun ImageView.setUrlRound(url: String?, radius: Int = 10) {
         .into(this)
 }
 
-fun ImageView.setUrlWithErrorIcon(url: String?, @DrawableRes errorRes: Int) {
+fun ImageView.setUrlWithErrorIcon(url: String, @DrawableRes errorRes: Int) {
     if (TaskStackManager.getInstance().topActivity != null
         && TaskStackManager.getInstance().topActivity.isFinishing) {
         return

@@ -36,7 +36,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.dora4"
                 artifactId = "dora-glide-support"
-                version = "1.0"
+                version = "1.1"
             }
         }
     }
