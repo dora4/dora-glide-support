@@ -16,7 +16,7 @@ dependencyResolutionManagement { {
 ```kotlin
 dependencies {
     // 扩展包必须在有主框架dora的情况下使用
-    implementation("com.github.dora4:dora:1.1.30")
+    implementation("com.github.dora4:dora:1.1.37")
     implementation("com.github.dora4:dora-glide-support:1.2")
 }
 ```
