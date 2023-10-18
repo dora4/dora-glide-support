@@ -1,9 +1,11 @@
 package dora.glide
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
@@ -20,12 +22,10 @@ import dora.glide.transformation.BlurTransformation
 import dora.glide.transformation.CircleBorderTransform
 import dora.lifecycle.glide.R
 import dora.util.ScreenUtils
-import dora.util.TaskStackManager
 import java.io.File
 
 fun ImageView.setUrl(url: String) {
-    if (TaskStackManager.getInstance().topActivity != null
-        && TaskStackManager.getInstance().topActivity.isFinishing) {
+    if (!assertValidRequest(context)) {
         return
     }
     Glide.with(context).load(url)
@@ -37,8 +37,7 @@ fun ImageView.setUrl(url: String) {
 }
 
 fun ImageView.setUrlNoPlaceholder(url: String) {
-    if (TaskStackManager.getInstance().topActivity != null
-        && TaskStackManager.getInstance().topActivity.isFinishing) {
+    if (!assertValidRequest(context)) {
         return
     }
     Glide.with(context).load(url)
@@ -53,8 +52,7 @@ fun ImageView.setUrlNoPlaceholder(url: String) {
  * 设置图片，不开启缓存。
  */
 fun ImageView.setUrlNoCache(url: String) {
-    if (TaskStackManager.getInstance().topActivity != null
-        && TaskStackManager.getInstance().topActivity.isFinishing) {
+    if (!assertValidRequest(context)) {
         return
     }
     Glide.with(context).load(url)
@@ -70,8 +68,7 @@ fun ImageView.setUrlNoCache(url: String) {
  * 加载圆形图片。
  */
 fun ImageView.setUrlCircle(url: String) {
-    if (TaskStackManager.getInstance().topActivity != null
-        && TaskStackManager.getInstance().topActivity.isFinishing) {
+    if (!assertValidRequest(context)) {
         return
     }
     //请求配置
@@ -92,8 +89,7 @@ fun ImageView.setUrlCircle(url: String) {
  * @param borderColor 边框颜色
  */
 fun ImageView.setUrlCircleBorder(url: String, borderWidth: Float, borderColor: Int) {
-    if (TaskStackManager.getInstance().topActivity != null
-        && TaskStackManager.getInstance().topActivity.isFinishing) {
+    if (!assertValidRequest(context)) {
         return
     }
     Glide.with(context).load(url)
@@ -113,8 +109,7 @@ fun ImageView.setUrlCircleBorder(url: String, borderWidth: Float, borderColor: I
  * 使用CenterCrop()重载，会先将bitmap居中裁剪，再进行圆角处理，这样就能看到了。
  */
 fun ImageView.setUrlRound(url: String, radius: Int = 10) {
-    if (TaskStackManager.getInstance().topActivity != null
-        && TaskStackManager.getInstance().topActivity.isFinishing) {
+    if (!assertValidRequest(context)) {
         return
     }
     Glide.with(context).load(url)
@@ -127,8 +122,7 @@ fun ImageView.setUrlRound(url: String, radius: Int = 10) {
 }
 
 fun ImageView.setUrlWithErrorIcon(url: String, @DrawableRes errorRes: Int) {
-    if (TaskStackManager.getInstance().topActivity != null
-        && TaskStackManager.getInstance().topActivity.isFinishing) {
+    if (!assertValidRequest(context)) {
         return
     }
     Glide.with(context).load(url)
@@ -141,8 +135,7 @@ fun ImageView.setUrlWithErrorIcon(url: String, @DrawableRes errorRes: Int) {
 }
 
 fun ImageView.setUrlAsBitmap(url: String, block: ((Bitmap) -> Unit)? = null) {
-    if (TaskStackManager.getInstance().topActivity != null
-        && TaskStackManager.getInstance().topActivity.isFinishing) {
+    if (!assertValidRequest(context)) {
         return
     }
     Glide.with(context).asBitmap().load(url)
@@ -158,8 +151,7 @@ fun ImageView.setUrlAsBitmap(url: String, block: ((Bitmap) -> Unit)? = null) {
 }
 
 fun ImageView.setUrlAsGif(url: String) {
-    if (TaskStackManager.getInstance().topActivity != null
-        && TaskStackManager.getInstance().topActivity.isFinishing) {
+    if (!assertValidRequest(context)) {
         return
     }
     Glide.with(context).asGif().load(url)
@@ -177,8 +169,7 @@ fun ImageView.setUrlAsGif(url: String) {
  * @param sampling  图片缩放比例，默认1
  */
 fun ImageView.setUrlBlur(url: String, radius: Int = 25, sampling: Int = 1) {
-    if (TaskStackManager.getInstance().topActivity != null
-        && TaskStackManager.getInstance().topActivity.isFinishing) {
+    if (!assertValidRequest(context)) {
         return
     }
     //请求配置
@@ -195,8 +186,7 @@ fun ImageView.setUrlBlur(url: String, radius: Int = 25, sampling: Int = 1) {
  * 适配屏幕宽度，高度自适应。
  */
 fun ImageView.setUrlAutoFitImage(url: String) {
-    if (TaskStackManager.getInstance().topActivity != null
-        && TaskStackManager.getInstance().topActivity.isFinishing) {
+    if (!assertValidRequest(context)) {
         return
     }
     Glide.with(context).asDrawable().load(url)
@@ -223,8 +213,7 @@ fun ImageView.setUrlAutoFitImage(url: String) {
 }
 
 fun ImageView.loadFile(file: File) {
-    if (TaskStackManager.getInstance().topActivity != null
-        && TaskStackManager.getInstance().topActivity.isFinishing) {
+    if (!assertValidRequest(context)) {
         return
     }
     // 请求配置
@@ -236,5 +225,22 @@ fun ImageView.loadFile(file: File) {
         .diskCacheStrategy(DiskCacheStrategy.RESOURCE) // 磁盘缓存策略
         .apply(options) // 圆形
         .into(this)
+}
+
+
+private fun assertValidRequest(context: Context): Boolean {
+    if (context is Activity) {
+        return !isFinishingOrDestroy(context)
+    } else if (context is ContextWrapper) {
+        if (context.baseContext is Activity) {
+            val activity = context.baseContext as Activity
+            return !isFinishingOrDestroy(activity)
+        }
+    }
+    return true
+}
+
+private fun isFinishingOrDestroy(activity: Activity): Boolean {
+    return activity.isFinishing || activity.isDestroyed
 }
 
