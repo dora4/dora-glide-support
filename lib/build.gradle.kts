@@ -25,7 +25,7 @@ android {
 }
 
 dependencies {
-    implementation("com.github.dora4:dora:1.1.33")
+    implementation("com.github.dora4:dora:1.1.46")
     api("com.github.bumptech.glide:glide:4.15.0")
 }
 
@@ -36,7 +36,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.dora4"
                 artifactId = "dora-glide-support"
-                version = "1.3"
+                version = "1.4"
             }
         }
     }
