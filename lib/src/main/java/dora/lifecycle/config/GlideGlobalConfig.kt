@@ -9,21 +9,21 @@ import dora.lifecycle.application.ApplicationLifecycleCallbacks
 class GlideGlobalConfig : GlobalConfig {
 
     override fun injectApplicationLifecycle(
-        context: Context?,
-        lifecycles: MutableList<ApplicationLifecycleCallbacks>?
+        context: Context,
+        lifecycles: MutableList<ApplicationLifecycleCallbacks>
     ) {
     }
 
     override fun injectActivityLifecycle(
-        context: Context?,
-        lifecycles: MutableList<Application.ActivityLifecycleCallbacks>?
+        context: Context,
+        lifecycles: MutableList<Application.ActivityLifecycleCallbacks>
     ) {
-        lifecycles?.add(GlideActivityLifecycle())
+        lifecycles.add(GlideActivityLifecycle())
     }
 
     override fun injectFragmentLifecycle(
-        context: Context?,
-        lifecycles: MutableList<FragmentManager.FragmentLifecycleCallbacks>?
+        context: Context,
+        lifecycles: MutableList<FragmentManager.FragmentLifecycleCallbacks>
     ) {
     }
 }
