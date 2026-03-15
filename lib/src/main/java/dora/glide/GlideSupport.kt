@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
@@ -16,231 +15,214 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import dora.glide.transformation.BlurTransformation
 import dora.glide.transformation.CircleBorderTransform
 import dora.lifecycle.glide.R
 import dora.util.ScreenUtils
 import java.io.File
+import androidx.core.graphics.drawable.toDrawable
+import dora.glide.transformation.RoundRectBorderTransform
+import kotlin.Float
 
+/**
+ * 默认RequestOptions。
+ */
+private val defaultOptions = RequestOptions()
+    .placeholder(R.drawable.dora_default_placeholder)
+    .error(R.drawable.dora_default_placeholder)
+    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+
+/**
+ * 基础加载。
+ */
 fun ImageView.setUrl(url: String) {
-    if (!assertValidRequest(context)) {
-        return
-    }
-    Glide.with(context).load(url)
-            .placeholder(R.drawable.dora_default_placeholder) // 占位符，异常时显示的图片
-            .error(R.drawable.dora_default_placeholder) // 错误时显示的图片
-            .skipMemoryCache(false) // 启用内存缓存
-            .diskCacheStrategy(DiskCacheStrategy.RESOURCE) // 磁盘缓存策略
-            .into(this)
-}
-
-fun ImageView.setUrlNoPlaceholder(url: String) {
-    if (!assertValidRequest(context)) {
-        return
-    }
-    Glide.with(context).load(url)
-        .placeholder(ColorDrawable(Color.TRANSPARENT))
-//        .error(R.drawable.dora_default_circle_placeholder) // 错误时显示的图片
-        .skipMemoryCache(false) //启用内存缓存
-        .diskCacheStrategy(DiskCacheStrategy.RESOURCE) //磁盘缓存策略
+    if (!assertValidRequest(context)) return
+    Glide.with(context)
+        .load(url)
+        .apply(defaultOptions)
         .into(this)
 }
 
 /**
- * 设置图片，不开启缓存。
+ * 无占位图。
+ */
+fun ImageView.setUrlNoPlaceholder(url: String) {
+    if (!assertValidRequest(context)) return
+    Glide.with(context)
+        .load(url)
+        .placeholder(Color.TRANSPARENT.toDrawable())
+        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+        .into(this)
+}
+
+/**
+ * 不使用缓存。
  */
 fun ImageView.setUrlNoCache(url: String) {
-    if (!assertValidRequest(context)) {
-        return
-    }
-    Glide.with(context).load(url)
-        .placeholder(R.drawable.dora_default_placeholder)
-        .error(R.drawable.dora_default_placeholder)
+    if (!assertValidRequest(context)) return
+    Glide.with(context)
+        .load(url)
         .priority(Priority.HIGH)
-        .skipMemoryCache(true) // 不启动缓存
-        .diskCacheStrategy(DiskCacheStrategy.NONE) // 不启用磁盘策略
+        .skipMemoryCache(true)
+        .diskCacheStrategy(DiskCacheStrategy.NONE)
+        .apply(defaultOptions)
         .into(this)
 }
 
 /**
- * 加载圆形图片。
+ * 圆形头像。
  */
 fun ImageView.setUrlCircle(url: String) {
-    if (!assertValidRequest(context)) {
-        return
-    }
-    //请求配置
-    val options = RequestOptions.circleCropTransform()
-    Glide.with(context).load(url)
-        .placeholder(R.drawable.dora_default_circle_placeholder)
-        .error(R.drawable.dora_default_circle_placeholder)
-        .skipMemoryCache(false) // 启用内存缓存
-        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-        .apply(options) // 圆形
+    if (!assertValidRequest(context)) return
+    Glide.with(context)
+        .load(url)
+        .apply(defaultOptions)
+        .circleCrop()
         .into(this)
 }
 
 /**
- * 加载边框圆形图片。
- *
- * @param borderWidth 边框宽度
- * @param borderColor 边框颜色
+ * 圆形带边框头像。
  */
 fun ImageView.setUrlCircleBorder(url: String, borderWidth: Float, borderColor: Int) {
-    if (!assertValidRequest(context)) {
-        return
-    }
-    Glide.with(context).load(url)
-        .placeholder(R.drawable.dora_default_placeholder)
-        .error(R.drawable.dora_default_placeholder)
-        .skipMemoryCache(false) //启用内存缓存
-        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-        .transform(CircleBorderTransform(borderWidth, borderColor)) // 圆形
+    if (!assertValidRequest(context)) return
+    Glide.with(context)
+        .load(url)
+        .apply(defaultOptions)
+        .transform(CircleBorderTransform(borderWidth, borderColor))
         .into(this)
 }
 
 /**
- * 加载圆角图片。
- *
- * 注意：glide的图片裁剪和ImageView  scaleType有冲突，
- * bitmap会先圆角裁剪，再加载到ImageView中，如果bitmap图片尺寸大于ImageView尺寸，则会看不到
- * 使用CenterCrop()重载，会先将bitmap居中裁剪，再进行圆角处理，这样就能看到了。
+ * 圆角矩形头像。
  */
-fun ImageView.setUrlRound(url: String, radius: Int = 10) {
-    if (!assertValidRequest(context)) {
-        return
-    }
-    Glide.with(context).load(url)
-        .placeholder(R.drawable.dora_default_placeholder)
-        .error(R.drawable.dora_default_placeholder)
-        .skipMemoryCache(false) // 启用内存缓存
-        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+fun ImageView.setUrlRoundRect(url: String, radius: Int = 10) {
+    if (!assertValidRequest(context)) return
+    Glide.with(context)
+        .load(url)
+        .apply(defaultOptions)
         .transform(CenterCrop(), RoundedCorners(radius))
         .into(this)
 }
 
-fun ImageView.setUrlWithErrorIcon(url: String, @DrawableRes errorRes: Int) {
-    if (!assertValidRequest(context)) {
-        return
-    }
-    Glide.with(context).load(url)
-        .placeholder(errorRes)
-        .error(errorRes)
-        .priority(Priority.HIGH)
-        .skipMemoryCache(true) //不启动缓存
-        .diskCacheStrategy(DiskCacheStrategy.NONE)
+/**
+ * 圆角矩形带边框头像。
+ */
+fun ImageView.setUrlRoundRect(url: String, radius: Int = 10, borderWidth: Float, borderColor: Int) {
+    if (!assertValidRequest(context)) return
+    Glide.with(context)
+        .load(url)
+        .apply(defaultOptions)
+        .transform(
+            CenterCrop(),
+            RoundRectBorderTransform(radius, borderWidth, borderColor)
+        )
         .into(this)
 }
 
+/**
+ * 错误图自定义。
+ */
+fun ImageView.setUrlWithErrorIcon(url: String, @DrawableRes errorRes: Int) {
+    if (!assertValidRequest(context)) return
+    Glide.with(context)
+        .load(url)
+        .placeholder(errorRes)
+        .error(errorRes)
+        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+        .into(this)
+}
+
+/**
+ * Bitmap回调。
+ */
 fun ImageView.setUrlAsBitmap(url: String, block: ((Bitmap) -> Unit)? = null) {
-    if (!assertValidRequest(context)) {
-        return
-    }
-    Glide.with(context).asBitmap().load(url)
-        .placeholder(R.drawable.dora_default_placeholder)
-        .error(R.drawable.dora_default_placeholder)
-        .into(object : SimpleTarget<Bitmap>() {
-            override fun onResourceReady(bitmap: Bitmap, transition: Transition<in Bitmap>?) {
-                // 可在这里对位图进行一些处理
-                block?.invoke(bitmap)
-                setImageBitmap(bitmap)
+    if (!assertValidRequest(context)) return
+    Glide.with(context)
+        .asBitmap()
+        .load(url)
+        .apply(defaultOptions)
+        .into(object : CustomTarget<Bitmap>() {
+
+            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                block?.invoke(resource)
+                setImageBitmap(resource)
             }
+
+            override fun onLoadCleared(placeholder: Drawable?) {}
         })
 }
 
+/**
+ * GIF加载。
+ */
 fun ImageView.setUrlAsGif(url: String) {
-    if (!assertValidRequest(context)) {
-        return
-    }
-    Glide.with(context).asGif().load(url)
-        .skipMemoryCache(true)
+    if (!assertValidRequest(context)) return
+    Glide.with(context)
+        .asGif()
+        .load(url)
         .diskCacheStrategy(DiskCacheStrategy.DATA)
-        .placeholder(R.drawable.dora_default_placeholder)
-        .error(R.drawable.dora_default_placeholder)
+        .apply(defaultOptions)
         .into(this)
 }
 
 /**
- * 设置图片高斯模糊。
- *
- * @param radius 设置模糊度(在0.0到25.0之间)，默认25
- * @param sampling  图片缩放比例，默认1
+ * 模糊图片。
  */
 fun ImageView.setUrlBlur(url: String, radius: Int = 25, sampling: Int = 1) {
-    if (!assertValidRequest(context)) {
-        return
-    }
-    //请求配置
-    val options = RequestOptions.bitmapTransform(BlurTransformation(radius, sampling))
+    if (!assertValidRequest(context)) return
     Glide.with(context)
-            .load(url)
-            .placeholder(R.drawable.dora_default_placeholder)
-            .error(R.drawable.dora_default_placeholder)
-            .apply(options)
-            .into(this)
-}
-
-/**
- * 适配屏幕宽度，高度自适应。
- */
-fun ImageView.setUrlAutoFitImage(url: String) {
-    if (!assertValidRequest(context)) {
-        return
-    }
-    Glide.with(context).asDrawable().load(url)
-            .placeholder(R.drawable.dora_default_placeholder)
-            .skipMemoryCache(false)
-            .diskCacheStrategy(DiskCacheStrategy.DATA)
-            .error(R.drawable.dora_default_placeholder)
-            .into(object : CustomTarget<Drawable?>() {
-                override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable?>?) {
-                    val width = resource.intrinsicWidth
-                    val height = resource.intrinsicHeight
-                    val lp = layoutParams
-                    lp.width = ScreenUtils.getScreenWidth(context)
-                    val tempHeight = height * (lp.width.toFloat() / width)
-                    lp.height = tempHeight.toInt()
-                    layoutParams = lp
-                    layoutParams = lp
-                    setImageDrawable(resource)
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {
-                }
-            })
-}
-
-fun ImageView.loadFile(file: File) {
-    if (!assertValidRequest(context)) {
-        return
-    }
-    // 请求配置
-    val options = RequestOptions.circleCropTransform()
-    Glide.with(context).load(file)
-        .placeholder(R.drawable.dora_default_placeholder) // 占位符，异常时显示的图片
-        .error(R.drawable.dora_default_placeholder) // 错误时显示的图片
-        .skipMemoryCache(false) // 启用内存缓存
-        .diskCacheStrategy(DiskCacheStrategy.RESOURCE) // 磁盘缓存策略
-        .apply(options) // 圆形
+        .load(url)
+        .apply(defaultOptions)
+        .transform(BlurTransformation(radius, sampling))
         .into(this)
 }
 
+/**
+ * 自适应屏幕宽度。
+ */
+fun ImageView.setUrlAutoFitImage(url: String) {
+    if (!assertValidRequest(context)) return
+    Glide.with(context)
+        .asDrawable()
+        .load(url)
+        .apply(defaultOptions)
+        .into(object : CustomTarget<Drawable>() {
+            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
+                val width = resource.intrinsicWidth
+                val height = resource.intrinsicHeight
+                val lp = layoutParams
+                lp.width = ScreenUtils.getScreenWidth(context)
+                lp.height = (height * (lp.width.toFloat() / width)).toInt()
+                layoutParams = lp
+                setImageDrawable(resource)
+            }
 
+            override fun onLoadCleared(placeholder: Drawable?) {}
+        })
+}
+
+/**
+ * 加载本地文件。
+ */
+fun ImageView.loadFile(file: File) {
+    if (!assertValidRequest(context)) return
+    Glide.with(context)
+        .load(file)
+        .apply(defaultOptions)
+        .circleCrop()
+        .into(this)
+}
+
+/**
+ * 检查Activity是否有效。
+ */
 private fun assertValidRequest(context: Context): Boolean {
-    if (context is Activity) {
-        return !isFinishingOrDestroy(context)
-    } else if (context is ContextWrapper) {
-        if (context.baseContext is Activity) {
-            val activity = context.baseContext as Activity
-            return !isFinishingOrDestroy(activity)
-        }
+    val activity = when (context) {
+        is Activity -> context
+        is ContextWrapper -> context.baseContext as? Activity
+        else -> null
     }
-    return true
+    return activity?.let { !it.isFinishing && !it.isDestroyed } ?: true
 }
-
-private fun isFinishingOrDestroy(activity: Activity): Boolean {
-    return activity.isFinishing || activity.isDestroyed
-}
-

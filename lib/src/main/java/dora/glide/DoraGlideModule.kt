@@ -21,17 +21,19 @@ class DoraGlideModule : AppGlideModule() {
         // 设置缓存的大小
         val cacheSize = maxMemory / 8
         // 设置Bitmap的缓存池
-        builder.setBitmapPool(LruBitmapPool(30))
+        builder.setBitmapPool(
+            LruBitmapPool(30 * 1024 * 1024)
+        )
         // 设置内存缓存
         builder.setMemoryCache(LruResourceCache(cacheSize.toLong()))
-        // 设置磁盘缓存
+        // 设置磁盘缓存，默认250M
         builder.setDiskCache(InternalCacheDiskCacheFactory(context))
         // 设置读取不在缓存中资源的线程
         builder.setSourceExecutor(GlideExecutor.newSourceExecutor())
         // 设置读取磁盘缓存中资源的线程
         builder.setDiskCacheExecutor(GlideExecutor.newDiskCacheExecutor())
         // 设置日志级别
-        builder.setLogLevel(Log.VERBOSE)
+        builder.setLogLevel(Log.ERROR)
         // 设置全局选项
         val requestOptions = RequestOptions().format(DecodeFormat.PREFER_RGB_565)
         builder.setDefaultRequestOptions(requestOptions)

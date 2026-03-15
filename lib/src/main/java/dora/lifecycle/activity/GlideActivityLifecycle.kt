@@ -3,30 +3,26 @@ package dora.lifecycle.activity
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
-import com.bumptech.glide.Glide
 
 class GlideActivityLifecycle : Application.ActivityLifecycleCallbacks {
 
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-    }
-
     override fun onActivityStarted(activity: Activity) {
-    }
-
-    override fun onActivityResumed(activity: Activity) {
-        Glide.with(activity).resumeRequests()
-    }
-
-    override fun onActivityPaused(activity: Activity) {
-        Glide.with(activity).pauseRequests()
+        // 跟Glide内部一样，仅演示，不要加
+//        Glide.with(activity).resumeRequests()
     }
 
     override fun onActivityStopped(activity: Activity) {
+        // 跟Glide内部一样，仅演示，不要加
+//        Glide.with(activity).pauseRequests()
     }
 
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
-    }
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
 
-    override fun onActivityDestroyed(activity: Activity) {
-    }
+    override fun onActivityResumed(activity: Activity) {}
+
+    override fun onActivityPaused(activity: Activity) {}
+
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+
+    override fun onActivityDestroyed(activity: Activity) {}
 }
